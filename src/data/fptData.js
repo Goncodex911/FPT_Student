@@ -234,6 +234,13 @@ export const semesters = [
   { id: 'summer2026', label: 'SUMMER2026', icon: 'sunny', active: true },
   { id: 'spring2026', label: 'SPRING2026', icon: 'leaf', active: false },
   { id: 'fall2025',   label: 'FALL2025',   icon: 'notifications', active: false },
+  { id: 'summer2025',   label: 'SUMMER2025',   icon: 'sunny', active: false },
+  { id: 'spring2025',   label: 'SPRING2025',   icon: 'leaf', active: false },
+  { id: 'fall2024',   label: 'FALL2024',   icon: 'notifications', active: false },
+  { id: 'summer2024',   label: 'SUMMER2024',   icon: 'sunny', active: false },
+  { id: 'spring2024',   label: 'SPRING2024',   icon: 'leaf', active: false },
+  { id: 'fall2023',   label: 'FALL2023',   icon: 'notifications', active: false },
+  { id: 'summer2023',   label: 'SUMMER2023',   icon: 'sunny', active: false },
 ];
 
 export const menuSections = [

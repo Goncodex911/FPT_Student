@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, SafeAreaView, StatusBar,
+  ScrollView, SafeAreaView, StatusBar, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -30,96 +30,97 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={s.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-
-      {/* ── Top Header ── */}
-      <View style={s.header}>
-        <View style={s.headerLeft}>
-          {/* Avatar placeholder */}
-          <View style={s.avatarBox}>
-            <Text style={s.avatarEmoji}>🐣</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={s.headerName} numberOfLines={1}>{currentStudent?.fullName}</Text>
-            <Text style={s.headerSub}>FPT University</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={s.bellBtn}>
-          <Ionicons name="notifications-outline" size={22} color={COLORS.navy} />
-        </TouchableOpacity>
-      </View>
-
-      {/* ── Content ── */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-        {menuSections.map((sec) => {
-          // Split items into rows of 2
-          const rows = [];
-          const items = sec.items;
-          for (let i = 0; i < items.length; i += 2) {
-            rows.push(items.slice(i, i + 2));
-          }
-
-          return (
-            <View key={sec.section} style={s.section}>
-              <Text style={s.sectionTitle}>{sec.section}</Text>
-
-              {rows.map((row, ri) => (
-                <View key={ri} style={s.row}>
-                  {row.map((item) => (
-                    <MenuItem key={item.id} item={item} onPress={handlePress} />
-                  ))}
-                  {/* If row has only 1 item, add empty spacer */}
-                  {row.length === 1 && <View style={s.menuItemSpacer} />}
-                </View>
-              ))}
+    <View style={s.root}>
+      {/* ── Navy safe area for status bar + header ── */}
+      <SafeAreaView style={s.safeHeader}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.navy} />
+        <View style={s.header}>
+          <View style={s.headerLeft}>
+            <View style={s.avatarBox}>
+              <Image source={require('../../assets/fap-logo.jpg')} style={s.avatarImg} />
             </View>
-          );
-        })}
+            <View style={{ flex: 1 }}>
+              <Text style={s.headerName} numberOfLines={1}>{currentStudent?.fullName}</Text>
+              <Text style={s.headerSub}>FPT University</Text>
+            </View>
+          </View>
+          {/* <TouchableOpacity style={s.bellBtn}> */}
+            <Ionicons name="notifications" size={22} color="#fff" />
+          {/* </TouchableOpacity> */}
+        </View>
+      </SafeAreaView>
 
-        {/* ── Logout ── */}
-        <TouchableOpacity style={s.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
-          <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
-          <Text style={s.logoutTxt}>Đăng xuất</Text>
-        </TouchableOpacity>
+      {/* ── Content with light background ── */}
+      <View style={s.content}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+          {menuSections.map((sec) => {
+            const rows = [];
+            const items = sec.items;
+            for (let i = 0; i < items.length; i += 2) {
+              rows.push(items.slice(i, i + 2));
+            }
 
-        <Text style={s.versionTxt}>myFAP v2.0.3 (2)</Text>
-      </ScrollView>
-    </SafeAreaView>
+            return (
+              <View key={sec.section} style={s.section}>
+                <Text style={s.sectionTitle}>{sec.section}</Text>
+
+                {rows.map((row, ri) => (
+                  <View key={ri} style={s.row}>
+                    {row.map((item) => (
+                      <MenuItem key={item.id} item={item} onPress={handlePress} />
+                    ))}
+                    {row.length === 1 && <View style={s.menuItemSpacer} />}
+                  </View>
+                ))}
+              </View>
+            );
+          })}
+
+          {/* ── Logout ── */}
+          <TouchableOpacity style={s.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
+            <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
+            <Text style={s.logoutTxt}>Đăng xuất</Text>
+          </TouchableOpacity>
+
+          <Text style={s.versionTxt}>myFAP v2.0.3 (2)</Text>
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 
 const ITEM_W = '48%';
 
 const s = StyleSheet.create({
-  safe:       { flex: 1, backgroundColor: COLORS.background },
+  root:       { flex: 1 },
+  safeHeader: { backgroundColor: COLORS.navy },
+  content:    { flex: 1, backgroundColor: COLORS.background },
 
   /* Header */
   header: {
-    backgroundColor: COLORS.background, flexDirection: 'row',
+    backgroundColor: COLORS.navy, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    paddingHorizontal: 16, paddingVertical: 2,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 10 },
   avatarBox: {
-    width: 46, height: 46, borderRadius: 12,
-    backgroundColor: '#FEF3C7', alignItems: 'center', justifyContent: 'center', marginRight: 10,
+    width: 40, height: 40, borderRadius: 10,
+    overflow: 'hidden', marginRight: 10,
+    backgroundColor: '#fff',
   },
-  avatarEmoji: { fontSize: 24 },
-  headerName:  { fontSize: 16, fontWeight: '700', color: COLORS.navy },
-  headerSub:   { fontSize: 12, color: COLORS.textSub, marginTop: 1 },
+  avatarImg: { width: 40, height: 40, borderRadius: 12, resizeMode: 'contain' },
+  headerName: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  headerSub: { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 1 },
   bellBtn: {
-    width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.cardBg,
+    width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
   },
 
   /* Scroll */
   scroll: { paddingBottom: 40 },
 
   /* Section */
-  section:      { paddingHorizontal: 16, marginTop: 22 },
+  section: { paddingHorizontal: 16, marginTop: 22 },
   sectionTitle: { fontSize: 11, fontWeight: '700', color: COLORS.textSub, letterSpacing: 1.1, marginBottom: 12 },
 
   /* Grid */

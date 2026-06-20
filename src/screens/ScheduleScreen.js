@@ -36,7 +36,7 @@ const getScheduleForWeek = (weekStart, studentId, semIdx) => {
   const items = [];
   const semStart = getSemesterStart(semIdx);
   const dayOffsets = { 'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6 };
-  
+
   // Calculate difference in weeks relative to the active semester start week
   const diffTime = weekStart.getTime() - semStart.getTime();
   const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
@@ -114,9 +114,9 @@ const formatMonthYear = (start) => {
 
 const AttendanceBadge = ({ status }) => {
   const map = {
-    'PRESENT':  { bg: COLORS.successBg,  color: COLORS.success,  label: 'PRESENT'  },
-    'NOT YET':  { bg: '#E5E7EB',         color: '#6B7280',       label: 'NOT YET'  },
-    'ABSENT':   { bg: COLORS.dangerBg,   color: COLORS.danger,   label: 'ABSENT'   },
+    'PRESENT': { bg: COLORS.successBg, color: COLORS.success, label: 'PRESENT' },
+    'NOT YET': { bg: '#E5E7EB', color: '#6B7280', label: 'NOT YET' },
+    'ABSENT': { bg: COLORS.dangerBg, color: COLORS.danger, label: 'ABSENT' },
   };
   const cfg = map[status] || map['NOT YET'];
   return (
@@ -155,7 +155,7 @@ const groupByDay = (items) => {
 const ScheduleScreen = ({ navigation }) => {
   const { currentStudent } = useAuth();
   const [activeSemIdx, setActiveSemIdx] = useState(0);
-  
+
   // Set initial week start to SUMMER2026 start date (June 15th, 2026)
   const [currentWeekStart, setCurrentWeekStart] = useState(() => new Date(2026, 5, 15));
   const [selectedDate, setSelectedDate] = useState(null); // default to null (show whole week)
@@ -216,12 +216,13 @@ const ScheduleScreen = ({ navigation }) => {
             style={[s.semChip, idx === activeSemIdx && s.semChipActive]}
             onPress={() => handleSemesterPress(idx)}
           >
-            <Ionicons
-              name={sem.icon}
-              size={14}
-              color={idx === activeSemIdx ? COLORS.white : COLORS.textSub}
-              style={{ marginRight: 5 }}
-            />
+            <View style={[s.semIconCircle, idx === activeSemIdx && s.semIconCircleActive]}>
+              <Ionicons
+                name={sem.icon}
+                size={15}
+                color={idx === activeSemIdx ? '#fff' : '#9CA3AF'}
+              />
+            </View>
             <Text style={[s.semTxt, idx === activeSemIdx && s.semTxtActive]}>{sem.label}</Text>
           </TouchableOpacity>
         ))}
@@ -244,26 +245,26 @@ const ScheduleScreen = ({ navigation }) => {
       {/* ── Day picker ── */}
       <View style={s.dayRow}>
         {weekDays.map((d) => {
-          const isToday    = d.formatted === '2026-06-16';
+          const isToday = d.formatted === '2026-06-16';
           const isSelected = d.formatted === selectedDate;
-          const hasClass   = studentSchedule.some(sc => sc.date === d.formatted);
+          const hasClass = studentSchedule.some(sc => sc.date === d.formatted);
           return (
             <TouchableOpacity
               key={d.formatted}
               style={[
-                s.dayCell, 
+                s.dayCell,
                 isSelected && s.dayCellActive,
                 (!selectedDate && isToday) && s.dayCellToday
               ]}
               onPress={() => setSelectedDate(d.formatted === selectedDate ? null : d.formatted)}
             >
               <Text style={[
-                s.dayShort, 
+                s.dayShort,
                 isSelected && s.dayTxtActive,
                 (!selectedDate && isToday) && s.dayTxtToday
               ]}>{d.short}</Text>
               <Text style={[
-                s.dayNum, 
+                s.dayNum,
                 isSelected && s.dayTxtActive,
                 (!selectedDate && isToday) && s.dayTxtToday
               ]}>{d.date}</Text>
@@ -341,21 +342,33 @@ const s = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 12,
     backgroundColor: COLORS.background, borderBottomWidth: 1, borderBottomColor: COLORS.border,
   },
-  backBtn:     { flexDirection: 'row', alignItems: 'center' },
-  backTxt:     { fontSize: 16, color: COLORS.navy, fontWeight: '500' },
+  backBtn: { flexDirection: 'row', alignItems: 'center' },
+  backTxt: { fontSize: 16, color: COLORS.navy, fontWeight: '500' },
   headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.navy },
 
   /* Semesters */
   semScroll: { backgroundColor: COLORS.background, flexGrow: 0 },
-  semRow:    { flexDirection: 'row', paddingHorizontal: 14, paddingVertical: 10, gap: 8 },
+  semRow: { flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 10, gap: 10 },
   semChip: {
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16,
-    backgroundColor: COLORS.cardBg, borderWidth: 1, borderColor: COLORS.border,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 28,
+    backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB',
   },
-  semChipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  semTxt:        { fontSize: 12, fontWeight: '600', color: COLORS.textSub },
-  semTxtActive:  { color: COLORS.white },
+  semChipActive: {
+    backgroundColor: '#EB8F00', borderColor: '#F5A623',
+    shadowColor: '#F5A623', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35, shadowRadius: 8, elevation: 6,
+  },
+  semIconCircle: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center',
+    marginRight: 8,
+  },
+  semIconCircleActive: {
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  semTxt: { fontSize: 12, fontWeight: '700', color: COLORS.navy },
+  semTxtActive: { color: '#fff' },
 
   /* Week range */
   weekRange: {
@@ -363,7 +376,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 8,
     backgroundColor: COLORS.background,
   },
-  weekLabel:  { fontSize: 12, color: COLORS.textSub },
+  weekLabel: { fontSize: 12, color: COLORS.textSub },
   monthLabel: { fontSize: 15, fontWeight: '700', color: COLORS.navy, marginTop: 2 },
 
   /* Day picker */
@@ -372,19 +385,19 @@ const s = StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 8,
     backgroundColor: COLORS.background, borderBottomWidth: 1, borderBottomColor: COLORS.border,
   },
-  dayCell:     { alignItems: 'center', paddingVertical: 6, paddingHorizontal: 8, borderRadius: 20 },
-  dayCellActive:{ backgroundColor: COLORS.navy },
-  dayCellToday:{
+  dayCell: { alignItems: 'center', paddingVertical: 6, paddingHorizontal: 8, borderRadius: 20 },
+  dayCellActive: { backgroundColor: COLORS.navy },
+  dayCellToday: {
     borderWidth: 1.5,
     borderColor: COLORS.navy,
     backgroundColor: COLORS.navy + '15',
   },
-  dayShort:    { fontSize: 12, color: COLORS.textSub, fontWeight: '500' },
-  dayNum:      { fontSize: 16, color: COLORS.navy, fontWeight: '700', marginTop: 2 },
-  dayTxtActive:{ color: COLORS.white },
+  dayShort: { fontSize: 12, color: COLORS.textSub, fontWeight: '500' },
+  dayNum: { fontSize: 16, color: COLORS.navy, fontWeight: '700', marginTop: 2 },
+  dayTxtActive: { color: COLORS.white },
   dayTxtToday: { color: COLORS.navy, fontWeight: '700' },
-  dot:         { width: 5, height: 5, borderRadius: 3, backgroundColor: COLORS.primary, marginTop: 3 },
-  dotActive:   { backgroundColor: COLORS.white },
+  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: COLORS.primary, marginTop: 3 },
+  dotActive: { backgroundColor: COLORS.white },
 
   /* Schedule list */
   list: { flex: 1 },
@@ -395,8 +408,8 @@ const s = StyleSheet.create({
   dayGroup: { flexDirection: 'row', paddingHorizontal: 14, paddingTop: 16 },
   dayLabelBox: { width: 44, alignItems: 'center', paddingTop: 4 },
   dayLabelNum: { fontSize: 18, fontWeight: '800', color: COLORS.navy },
-  dayLabelName:{ fontSize: 12, color: COLORS.textSub },
-  slots:       { flex: 1, gap: 10, paddingLeft: 6 },
+  dayLabelName: { fontSize: 12, color: COLORS.textSub },
+  slots: { flex: 1, gap: 10, paddingLeft: 6 },
 
   /* Slot card */
   slotCard: {
@@ -408,18 +421,18 @@ const s = StyleSheet.create({
 
   /* Slot time col */
   slotTimeCol: { alignItems: 'center', paddingHorizontal: 10, paddingVertical: 12, minWidth: 72 },
-  slotBadge:   { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, marginBottom: 8 },
-  slotBadgeTxt:{ fontSize: 11, fontWeight: '700' },
-  slotTime:    { fontSize: 12, color: COLORS.textSub, fontWeight: '600' },
-  slotTimeLine:{ width: 1, height: 16, backgroundColor: COLORS.border, marginVertical: 3 },
+  slotBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, marginBottom: 8 },
+  slotBadgeTxt: { fontSize: 11, fontWeight: '700' },
+  slotTime: { fontSize: 12, color: COLORS.textSub, fontWeight: '600' },
+  slotTimeLine: { width: 1, height: 16, backgroundColor: COLORS.border, marginVertical: 3 },
 
   /* Slot info col */
   slotInfo: { flex: 1, paddingVertical: 12, paddingRight: 14 },
-  roomLabel:   { fontSize: 11, color: COLORS.textLight },
-  roomName:    { fontSize: 15, fontWeight: '700', color: COLORS.navy, marginBottom: 6 },
-  slotCode:    { fontSize: 14, fontWeight: '700', color: COLORS.navy },
-  slotDetail:  { fontSize: 13, color: COLORS.textSub, marginTop: 2 },
-  badgeRow:    { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 4 },
+  roomLabel: { fontSize: 11, color: COLORS.textLight },
+  roomName: { fontSize: 15, fontWeight: '700', color: COLORS.navy, marginBottom: 6 },
+  slotCode: { fontSize: 14, fontWeight: '700', color: COLORS.navy },
+  slotDetail: { fontSize: 13, color: COLORS.textSub, marginTop: 2 },
+  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 4 },
 });
 
 export default ScheduleScreen;
