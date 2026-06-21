@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, TouchableOpacity,
   ScrollView, SafeAreaView, StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { scheduleData, semesters } from '../data/fptData';
 import { useAuth } from '../context/AuthContext';
 import { COLORS } from '../utils/theme';
@@ -71,6 +71,16 @@ const getScheduleForWeek = (weekStart, studentId, semIdx) => {
       attendance = 'NOT YET';
     }
 
+    const slotColors = {
+      'Slot 1': '#913A07',
+      'Slot 2': '#53DB36',
+      'Slot 3': '#DD6424',
+      'Slot 4': '#180CDA',
+      'Slot 5': '#140E91',
+      'Slot 7': '#000000',
+    };
+    const dynamicSlotColor = slotColors[baseItem.slot] || baseItem.slotColor;
+
     items.push({
       ...baseItem,
       id: `${baseItem.id}_${dateStr}`,
@@ -78,6 +88,7 @@ const getScheduleForWeek = (weekStart, studentId, semIdx) => {
       dayLabel: dayLabelStr,
       sessionNo: sessionNo,
       attendance: attendance,
+      slotColor: dynamicSlotColor,
     });
   });
 
@@ -114,9 +125,9 @@ const formatMonthYear = (start) => {
 
 const AttendanceBadge = ({ status }) => {
   const map = {
-    'PRESENT': { bg: COLORS.successBg, color: COLORS.success, label: 'PRESENT' },
-    'NOT YET': { bg: '#E5E7EB', color: '#6B7280', label: 'NOT YET' },
-    'ABSENT': { bg: COLORS.dangerBg, color: COLORS.danger, label: 'ABSENT' },
+    'PRESENT': { bg: '#53DA36', color: '#FFFFFF', label: 'PRESENT' },
+    'NOT YET': { bg: '#9CA3AF', color: '#FFFFFF', label: 'NOT YET' },
+    'ABSENT': { bg: '#913A07', color: '#FFFFFF', label: 'ABSENT' },
   };
   const cfg = map[status] || map['NOT YET'];
   return (
@@ -131,8 +142,8 @@ const badge = StyleSheet.create({
 });
 
 const MaterialBadge = () => (
-  <View style={[badge.box, { backgroundColor: '#FEF3C7' }]}>
-    <Text style={[badge.txt, { color: '#D97706' }]}>Materials</Text>
+  <View style={[badge.box, { backgroundColor: '#EC8E01' }]}>
+    <Text style={[badge.txt, { color: '#FFFFFF' }]}>Materials</Text>
   </View>
 );
 
@@ -158,7 +169,7 @@ const ScheduleScreen = ({ navigation }) => {
 
   // Set initial week start to SUMMER2026 start date (June 15th, 2026)
   const [currentWeekStart, setCurrentWeekStart] = useState(() => new Date(2026, 5, 15));
-  const [selectedDate, setSelectedDate] = useState(null); // default to null (show whole week)
+  const [selectedDayIdx, setSelectedDayIdx] = useState(6); // Default to Sunday (index 6 of weekDays)
 
   const weekDays = useMemo(() => getWeekDays(currentWeekStart), [currentWeekStart]);
 
@@ -168,15 +179,13 @@ const ScheduleScreen = ({ navigation }) => {
   );
 
   const filteredSchedule = useMemo(() => {
-    if (selectedDate === null) return studentSchedule;
-    return studentSchedule.filter(d => d.date === selectedDate);
-  }, [studentSchedule, selectedDate]);
+    return studentSchedule;
+  }, [studentSchedule]);
 
   const grouped = useMemo(() => groupByDay(filteredSchedule), [filteredSchedule]);
 
   const handleSemesterPress = (idx) => {
     setActiveSemIdx(idx);
-    setSelectedDate(null);
     setCurrentWeekStart(getSemesterStart(idx));
   };
 
@@ -184,167 +193,193 @@ const ScheduleScreen = ({ navigation }) => {
     const next = new Date(currentWeekStart);
     next.setDate(currentWeekStart.getDate() - 7);
     setCurrentWeekStart(next);
-    setSelectedDate(null);
   };
 
   const handleNextWeek = () => {
     const next = new Date(currentWeekStart);
     next.setDate(currentWeekStart.getDate() + 7);
     setCurrentWeekStart(next);
-    setSelectedDate(null);
   };
 
   return (
-    <SafeAreaView style={s.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+    <View style={s.root}>
+      {/* ── Navy safe area for status bar + header ── */}
+      <SafeAreaView style={s.safeHeader}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.navy} />
 
-      {/* ── Header ── */}
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
-          <Ionicons name="chevron-back" size={22} color={COLORS.navy} />
-          <Text style={s.backTxt}>Home</Text>
-        </TouchableOpacity>
-        <Text style={s.headerTitle}>Weekly timetable</Text>
-        <View style={{ width: 60 }} />
-      </View>
-
-      {/* ── Semester Tabs ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.semScroll} contentContainerStyle={s.semRow}>
-        {semesters.map((sem, idx) => (
-          <TouchableOpacity
-            key={sem.id}
-            style={[s.semChip, idx === activeSemIdx && s.semChipActive]}
-            onPress={() => handleSemesterPress(idx)}
-          >
-            <View style={[s.semIconCircle, idx === activeSemIdx && s.semIconCircleActive]}>
-              <Ionicons
-                name={sem.icon}
-                size={15}
-                color={idx === activeSemIdx ? '#fff' : '#9CA3AF'}
-              />
-            </View>
-            <Text style={[s.semTxt, idx === activeSemIdx && s.semTxtActive]}>{sem.label}</Text>
+        {/* ── Header ── */}
+        <View style={s.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
+            <Ionicons name="chevron-back" size={30} color={COLORS.white} />
+            <Text style={s.backTxt}>Home</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* ── Week range ── */}
-      <View style={s.weekRange}>
-        <TouchableOpacity onPress={handlePrevWeek}>
-          <Ionicons name="chevron-back" size={20} color={COLORS.navy} />
-        </TouchableOpacity>
-        <View style={{ alignItems: 'center' }}>
-          <Text style={s.weekLabel}>{formatWeekRange(currentWeekStart)}</Text>
-          <Text style={s.monthLabel}>{formatMonthYear(currentWeekStart)}</Text>
+          <Text style={s.headerTitle}>Weekly timetable</Text>
+          <View style={{ width: 60 }} />
         </View>
-        <TouchableOpacity onPress={handleNextWeek}>
-          <Ionicons name="chevron-forward" size={20} color={COLORS.navy} />
-        </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
-      {/* ── Day picker ── */}
-      <View style={s.dayRow}>
-        {weekDays.map((d) => {
-          const isToday = d.formatted === '2026-06-16';
-          const isSelected = d.formatted === selectedDate;
-          const hasClass = studentSchedule.some(sc => sc.date === d.formatted);
-          return (
+      {/* ── Content with light background ── */}
+      <View style={s.content}>
+        {/* ── Semester Tabs ── */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.semScroll} contentContainerStyle={s.semRow}>
+          {semesters.map((sem, idx) => (
             <TouchableOpacity
-              key={d.formatted}
-              style={[
-                s.dayCell,
-                isSelected && s.dayCellActive,
-                (!selectedDate && isToday) && s.dayCellToday
-              ]}
-              onPress={() => setSelectedDate(d.formatted === selectedDate ? null : d.formatted)}
+              key={sem.id}
+              style={[s.semChip, idx === activeSemIdx && s.semChipActive]}
+              onPress={() => handleSemesterPress(idx)}
             >
-              <Text style={[
-                s.dayShort,
-                isSelected && s.dayTxtActive,
-                (!selectedDate && isToday) && s.dayTxtToday
-              ]}>{d.short}</Text>
-              <Text style={[
-                s.dayNum,
-                isSelected && s.dayTxtActive,
-                (!selectedDate && isToday) && s.dayTxtToday
-              ]}>{d.date}</Text>
-              {hasClass && <View style={[s.dot, isSelected && s.dotActive]} />}
+              <View style={[s.semIconCircle, idx === activeSemIdx && s.semIconCircleActive]}>
+                {sem.icon === 'seedling' || sem.icon === 'tree' || sem.icon === 'sun' ? (
+                  <FontAwesome5
+                    name={sem.icon}
+                    size={13}
+                    solid
+                    color={idx === activeSemIdx ? '#EB8F00' : '#9CA3AF'}
+                  />
+                ) : (
+                  <Ionicons
+                    name={sem.icon}
+                    size={15}
+                    color={idx === activeSemIdx ? '#EB8F00' : '#9CA3AF'}
+                  />
+                )}
+              </View>
+              <Text style={[s.semTxt, idx === activeSemIdx && s.semTxtActive]}>{sem.label}</Text>
             </TouchableOpacity>
-          );
-        })}
-      </View>
+          ))}
+        </ScrollView>
 
-      {/* ── Schedule list ── */}
-      <ScrollView style={s.list} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        {grouped.length === 0 && (
-          <View style={s.empty}>
-            <Ionicons name="calendar-outline" size={48} color={COLORS.textLight} />
-            <Text style={s.emptyTxt}>Không có lịch học</Text>
-          </View>
-        )}
+        {/* ── Week range text ── */}
+        <View style={s.weekRangeContainer}>
+          <Text style={s.weekLabel}>{formatWeekRange(currentWeekStart)}</Text>
+        </View>
 
-        {grouped.map((day) => (
-          <View key={day.dayLabel} style={s.dayGroup}>
-            {/* Day label */}
-            <View style={s.dayLabelBox}>
-              <Text style={s.dayLabelNum}>{day.dayLabel}</Text>
-              <Text style={s.dayLabelName}>{day.dayName}</Text>
-            </View>
+        {/* ── Month navigation row ── */}
+        <View style={s.monthNavRow}>
+          <TouchableOpacity onPress={handlePrevWeek} style={s.navArrow}>
+            <Ionicons name="caret-back" size={22} color={COLORS.navy} />
+          </TouchableOpacity>
+          <Text style={s.monthLabel}>{formatMonthYear(currentWeekStart)}</Text>
+          <TouchableOpacity onPress={handleNextWeek} style={s.navArrow}>
+            <Ionicons name="caret-forward" size={22} color={COLORS.navy} />
+          </TouchableOpacity>
+        </View>
 
-            {/* Slot cards */}
-            <View style={s.slots}>
-              {day.slots.map((slot) => (
-                <View key={slot.id} style={s.slotCard}>
-                  {/* Colored left bar */}
-                  <View style={[s.slotBar, { backgroundColor: slot.slotColor }]} />
-
-                  {/* Slot time column */}
-                  <View style={s.slotTimeCol}>
-                    <View style={[s.slotBadge, { backgroundColor: slot.slotColor + '20' }]}>
-                      <Text style={[s.slotBadgeTxt, { color: slot.slotColor }]}>{slot.slot}</Text>
-                    </View>
-                    <Text style={s.slotTime}>{slot.startTime}</Text>
-                    <View style={s.slotTimeLine} />
-                    <Text style={s.slotTime}>{slot.endTime}</Text>
-                  </View>
-
-                  {/* Info column */}
-                  <View style={s.slotInfo}>
-                    <Text style={s.roomLabel}>Room</Text>
-                    <Text style={s.roomName}>{slot.room}</Text>
-                    <Text style={s.slotCode}>{slot.subjectCode}</Text>
-                    <Text style={s.slotDetail}>SessionNo: {slot.sessionNo}</Text>
-                    <Text style={s.slotDetail}>Class: {slot.className}</Text>
-                    <Text style={s.slotDetail}>Lecturer: {slot.lecturer}</Text>
-
-                    <View style={s.badgeRow}>
-                      <AttendanceBadge status={slot.attendance} />
-                      <MaterialBadge />
-                      {slot.attendance === 'NOT YET' && <MeetBadge />}
-                    </View>
-                  </View>
+        {/* ── Day picker ── */}
+        <View style={s.dayRow}>
+          {weekDays.map((d, index) => {
+            const isSelected = index === selectedDayIdx;
+            const hasClass = studentSchedule.some(sc => sc.date === d.formatted);
+            return (
+              <TouchableOpacity
+                key={d.formatted}
+                style={s.dayCell}
+                onPress={() => setSelectedDayIdx(index)}
+              >
+                <Text style={s.dayShort}>{d.short}</Text>
+                <View style={[
+                  s.dayNumContainer,
+                  isSelected && s.dayNumContainerActive
+                ]}>
+                  <Text style={[
+                    s.dayNum,
+                    isSelected && s.dayNumActive
+                  ]}>{d.date}</Text>
                 </View>
-              ))}
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+                {hasClass && <View style={s.dot} />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* ── Schedule list ── */}
+        <View style={s.scheduleContainer}>
+          <ScrollView style={s.list} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+            {grouped.length === 0 && (
+              <View style={s.empty}>
+                <Ionicons name="calendar-outline" size={48} color={COLORS.textLight} />
+                <Text style={s.emptyTxt}>Không có lịch học</Text>
+              </View>
+            )}
+
+            {grouped.map((day, index) => (
+              <View key={day.dayLabel} style={[s.dayGroup, index === 0 && s.dayGroupFirst]}>
+                {/* Day label */}
+                <View style={s.dayLabelBox}>
+                  <Text style={s.dayLabelNum}>{day.dayLabel}</Text>
+                  <Text style={s.dayLabelName}>{day.dayName}</Text>
+                </View>
+
+                {/* Slot cards */}
+                <View style={s.slots}>
+                  {day.slots.map((slot, sIdx) => {
+                    const isLastSlot = sIdx === day.slots.length - 1;
+                    return (
+                      <View key={slot.id} style={[s.slotCard, !isLastSlot && s.slotDivider]}>
+                        {/* Colored left bar */}
+                        <View style={[s.slotBar, { backgroundColor: slot.slotColor }]} />
+
+                        {/* Slot time column */}
+                        <View style={s.slotTimeCol}>
+                          <View style={[s.slotBadge, { backgroundColor: slot.slotColor + '20' }]}>
+                            <Text style={[s.slotBadgeTxt, { color: slot.slotColor }]}>{slot.slot}</Text>
+                          </View>
+                          <Text style={s.slotTime}>{slot.startTime}</Text>
+                          <View style={s.slotTimeLine} />
+                          <Text style={s.slotTime}>{slot.endTime}</Text>
+                        </View>
+
+                        {/* Info column */}
+                        <View style={s.slotInfo}>
+                          <View style={s.roomContainer}>
+                            <Text style={s.roomLabel}>Room</Text>
+                            <Text style={s.roomName}>{slot.room}</Text>
+                          </View>
+                          <Text style={s.slotCode}>{slot.subjectCode}</Text>
+                          <Text style={s.slotDetail}>SessionNo: {slot.sessionNo}</Text>
+                          <Text style={s.slotDetail}>Class: {slot.className}</Text>
+                          <Text style={s.slotDetail}>Lecturer: {slot.lecturer}</Text>
+
+                          <View style={s.badgeRow}>
+                            <AttendanceBadge status={slot.attendance} />
+                            <MaterialBadge />
+                            {slot.attendance === 'NOT YET' && <MeetBadge />}
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    </View>
   );
 };
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.background },
+  root: { flex: 1 },
+  safeHeader: { backgroundColor: COLORS.navy },
+  content: { flex: 1, backgroundColor: COLORS.background },
+  scheduleContainer: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    marginBottom: 24,
+    borderBottomWidth: 0.3,
+    borderBottomColor: '#7E7E80',
+  },
 
   /* Header */
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 12, paddingVertical: 12,
-    backgroundColor: COLORS.background, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    paddingHorizontal: 0, paddingVertical: 8,
+    backgroundColor: COLORS.navy, borderBottomWidth: 1, borderBottomColor: COLORS.border,
   },
   backBtn: { flexDirection: 'row', alignItems: 'center' },
-  backTxt: { fontSize: 16, color: COLORS.navy, fontWeight: '500' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.navy },
+  backTxt: { fontSize: 13, color: COLORS.white, fontWeight: '500' },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.white },
 
   /* Semesters */
   semScroll: { backgroundColor: COLORS.background, flexGrow: 0 },
@@ -352,7 +387,7 @@ const s = StyleSheet.create({
   semChip: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 10, paddingVertical: 5, borderRadius: 28,
-    backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB',
+    backgroundColor: '#F9F9F9', borderWidth: 1, borderColor: '#E5E7EB',
   },
   semChipActive: {
     backgroundColor: '#EB8F00', borderColor: '#F5A623',
@@ -361,43 +396,85 @@ const s = StyleSheet.create({
   },
   semIconCircle: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.02)', alignItems: 'center', justifyContent: 'center',
     marginRight: 8,
   },
   semIconCircleActive: {
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: '#F0A93E',
   },
   semTxt: { fontSize: 12, fontWeight: '700', color: COLORS.navy },
   semTxtActive: { color: '#fff' },
 
   /* Week range */
-  weekRange: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 8,
+  weekRangeContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11.5,
     backgroundColor: COLORS.background,
   },
-  weekLabel: { fontSize: 12, color: COLORS.textSub },
-  monthLabel: { fontSize: 15, fontWeight: '700', color: COLORS.navy, marginTop: 2 },
+  weekLabel: { fontSize: 12, fontWeight: '500', color: COLORS.textSub },
+
+  /* Month navigation */
+  monthNavRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 1,
+    paddingVertical: 1,
+    backgroundColor: COLORS.white,
+    borderTopWidth: 0.3,
+    borderTopColor: "#7E7E80",
+  },
+  monthLabel: { fontSize: 15, fontWeight: '700', color: COLORS.navy },
+  navArrow: { padding: 4 },
 
   /* Day picker */
   dayRow: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    paddingHorizontal: 8, paddingVertical: 8,
-    backgroundColor: COLORS.background, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 1,
+    paddingVertical: 1,
+    paddingBottom: 5.5,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 0.3,
+    borderBottomColor: '#7E7E80',
   },
-  dayCell: { alignItems: 'center', paddingVertical: 6, paddingHorizontal: 8, borderRadius: 20 },
-  dayCellActive: { backgroundColor: COLORS.navy },
-  dayCellToday: {
-    borderWidth: 1.5,
-    borderColor: COLORS.navy,
-    backgroundColor: COLORS.navy + '15',
+  dayCell: {
+    alignItems: 'center',
+    flex: 1,
+    paddingVertical: 4,
   },
-  dayShort: { fontSize: 12, color: COLORS.textSub, fontWeight: '500' },
-  dayNum: { fontSize: 16, color: COLORS.navy, fontWeight: '700', marginTop: 2 },
-  dayTxtActive: { color: COLORS.white },
-  dayTxtToday: { color: COLORS.navy, fontWeight: '700' },
-  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: COLORS.primary, marginTop: 3 },
-  dotActive: { backgroundColor: COLORS.white },
+  dayShort: {
+    fontSize: 13,
+    color: COLORS.textSub,
+    fontWeight: '450',
+    marginBottom: 6,
+  },
+  dayNumContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayNumContainerActive: {
+    backgroundColor: COLORS.navy,
+  },
+  dayNum: {
+    fontSize: 13,
+    color: COLORS.navy,
+    fontWeight: '0',
+  },
+  dayNumActive: {
+    color: COLORS.white,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.navy,
+    marginTop: -8,
+  },
 
   /* Schedule list */
   list: { flex: 1 },
@@ -405,32 +482,68 @@ const s = StyleSheet.create({
   emptyTxt: { color: COLORS.textSub, fontSize: 15 },
 
   /* Day group */
-  dayGroup: { flexDirection: 'row', paddingHorizontal: 14, paddingTop: 16 },
-  dayLabelBox: { width: 44, alignItems: 'center', paddingTop: 4 },
-  dayLabelNum: { fontSize: 18, fontWeight: '800', color: COLORS.navy },
+  dayGroup: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  dayGroupFirst: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    marginTop: -1,
+  },
+  dayLabelBox: {
+    width: 75,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.border,
+  },
+  dayLabelNum: { fontSize: 18, fontWeight: '700', color: COLORS.navy },
   dayLabelName: { fontSize: 12, color: COLORS.textSub },
-  slots: { flex: 1, gap: 10, paddingLeft: 6 },
+  slots: {
+    flex: 1,
+  },
 
   /* Slot card */
   slotCard: {
-    flexDirection: 'row', backgroundColor: COLORS.cardBg, borderRadius: 14, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
-    marginBottom: 4,
+    flexDirection: 'row',
+    backgroundColor: COLORS.cardBg,
+    overflow: 'hidden',
   },
-  slotBar: { width: 4 },
+  slotDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  slotBar: {
+    width: 4,
+    borderRadius: 2,
+    marginVertical: 12,
+    marginLeft: 0,
+  },
 
   /* Slot time col */
   slotTimeCol: { alignItems: 'center', paddingHorizontal: 10, paddingVertical: 12, minWidth: 72 },
   slotBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, marginBottom: 8 },
   slotBadgeTxt: { fontSize: 11, fontWeight: '700' },
-  slotTime: { fontSize: 12, color: COLORS.textSub, fontWeight: '600' },
+  slotTime: { fontSize: 10, color: '#A0AEC0', fontWeight: '500' },
   slotTimeLine: { width: 1, height: 16, backgroundColor: COLORS.border, marginVertical: 3 },
 
   /* Slot info col */
   slotInfo: { flex: 1, paddingVertical: 12, paddingRight: 14 },
-  roomLabel: { fontSize: 11, color: COLORS.textLight },
-  roomName: { fontSize: 15, fontWeight: '700', color: COLORS.navy, marginBottom: 6 },
-  slotCode: { fontSize: 14, fontWeight: '700', color: COLORS.navy },
+  roomContainer: {
+    backgroundColor: '#f2f3f5ff',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    minWidth: 220,
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+  },
+  roomLabel: { fontSize: 10, color: COLORS.textLight },
+  roomName: { fontSize: 13, fontWeight: '700', color: COLORS.navy },
+  slotCode: { fontSize: 13, fontWeight: '500', color: COLORS.textSub },
   slotDetail: { fontSize: 13, color: COLORS.textSub, marginTop: 2 },
   badgeRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 4 },
 });

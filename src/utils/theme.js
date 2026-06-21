@@ -3,7 +3,7 @@
 // ============================================================
 
 export const COLORS = {
-  navy:          '#1B2A4A',
+  navy:          '#1A2949',
   navyLight:     '#253555',
   primary:       '#F97316',   // orange accent (active tab / semester chip)
   blue:          '#3B82F6',

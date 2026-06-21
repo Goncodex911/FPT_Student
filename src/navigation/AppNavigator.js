@@ -5,14 +5,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
-import LoginScreen    from '../screens/LoginScreen';
-import HomeScreen     from '../screens/HomeScreen';
+import LoginScreen from '../screens/LoginScreen';
+import HomeScreen from '../screens/HomeScreen';
 import ScheduleScreen from '../screens/ScheduleScreen';
-import ExamScreen     from '../screens/ExamScreen';
-import ProfileScreen  from '../screens/ProfileScreen';
+import ExamScreen from '../screens/ExamScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import { COLORS } from '../utils/theme';
 
-const Tab   = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 /* ── Tab icon with active indicator dot ── */
@@ -29,6 +29,16 @@ const ti = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
 });
 
+const HomeStack = createStackNavigator();
+
+const HomeStackNavigator = () => (
+  <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+    <HomeStack.Screen name="HomeMain" component={HomeScreen} />
+    <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
+    <HomeStack.Screen name="Exam" component={ExamScreen} />
+  </HomeStack.Navigator>
+);
+
 /* ── Bottom Tab Navigator ── */
 const MainTabs = () => (
   <Tab.Navigator
@@ -37,7 +47,8 @@ const MainTabs = () => (
       tabBarStyle: {
         backgroundColor: COLORS.navy,
         borderTopWidth: 0,
-        height: Platform.OS === 'ios' ? 85 : 62,
+        borderTopColor: COLORS.border,
+        height: Platform.OS === 'ios' ? 75 : 62,
         paddingBottom: Platform.OS === 'ios' ? 26 : 8,
         paddingTop: 8,
         elevation: 20,
@@ -45,6 +56,8 @@ const MainTabs = () => (
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.15,
         shadowRadius: 12,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
       },
       tabBarActiveTintColor: COLORS.primary,
       tabBarInactiveTintColor: '#8899BB',
@@ -53,7 +66,7 @@ const MainTabs = () => (
   >
     <Tab.Screen
       name="Home"
-      component={HomeScreen}
+      component={HomeStackNavigator}
       options={{
         tabBarIcon: ({ focused, color }) => <TabIcon name="home" focused={focused} color={color} />,
       }}
@@ -84,11 +97,7 @@ const AppNavigator = () => {
       {!currentStudent ? (
         <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
-        <>
-          <Stack.Screen name="Main"     component={MainTabs}      />
-          <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ presentation: 'card' }} />
-          <Stack.Screen name="Exam"     component={ExamScreen}     options={{ presentation: 'card' }} />
-        </>
+        <Stack.Screen name="Main" component={MainTabs} />
       )}
     </Stack.Navigator>
   );
