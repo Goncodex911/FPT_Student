@@ -113,11 +113,23 @@ const LoginScreen = ({ navigation }) => {
             <View style={s.demo}>
               <Text style={s.demoTitle}>Tài khoản demo:</Text>
               <View style={s.demoRow}>
-                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('thuan', '123456')}>
-                  <Text style={s.demoTxt}>thuan / 123456</Text>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('binh', '123456')}>
+                  <Text style={s.demoTxt}>binh</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('hoai', '123456')}>
-                  <Text style={s.demoTxt}>hoai / 123456</Text>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('dong', '123456')}>
+                  <Text style={s.demoTxt}>dong</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('thuan', '123456')}>
+                  <Text style={s.demoTxt}>thuan</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('tam', '123456')}>
+                  <Text style={s.demoTxt}>tam</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('tu', '123456')}>
+                  <Text style={s.demoTxt}>tu</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={s.demoChip} onPress={() => fillDemo('dat', '123456')}>
+                  <Text style={s.demoTxt}>dat</Text>
                 </TouchableOpacity>
               </View>
             </View>

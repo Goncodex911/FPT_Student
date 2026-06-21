@@ -48,6 +48,18 @@ const getScheduleForWeek = (weekStart, studentId, semIdx) => {
     const offset = dayOffsets[baseItem.dayName];
     if (offset === undefined) return;
 
+    // PMG201c only runs in the week starting 2026-05-11
+    if (baseItem.subjectCode === 'PMG201c') {
+      const pmgStart = new Date(2026, 4, 11); // May 11, 2026
+      if (
+        weekStart.getFullYear() !== pmgStart.getFullYear() ||
+        weekStart.getMonth() !== pmgStart.getMonth() ||
+        weekStart.getDate() !== pmgStart.getDate()
+      ) {
+        return;
+      }
+    }
+
     const slotDate = new Date(weekStart);
     slotDate.setDate(weekStart.getDate() + offset);
 
@@ -60,14 +72,14 @@ const getScheduleForWeek = (weekStart, studentId, semIdx) => {
     if (sessionNo < 1) sessionNo = 1;
     if (sessionNo > 30) sessionNo = 30;
 
-    // Attendance status: past classes (before 2026-06-16) change 'NOT YET' to 'PRESENT'
+    // Attendance status: past classes (before 2026-06-24) change 'NOT YET' to 'PRESENT'
     let attendance = baseItem.attendance;
-    const todayStr = '2026-06-16';
+    const todayStr = '2026-06-24';
     if (dateStr < todayStr) {
       if (attendance === 'NOT YET') {
         attendance = 'PRESENT';
       }
-    } else if (dateStr > todayStr) {
+    } else {
       attendance = 'NOT YET';
     }
 
