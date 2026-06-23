@@ -16,7 +16,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K18',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
   {
@@ -32,7 +32,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K18',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
   {
@@ -48,7 +48,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K18',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
   {
@@ -64,7 +64,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K19',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
   {
@@ -80,7 +80,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K19',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
   {
@@ -96,7 +96,7 @@ export const fptStudents = [
     major: 'Software Engineering',
     specialization: 'Mobile Development',
     course: 'K19',
-    role: 'SV',
+    role: 'HD',
     avatar: null,
   },
 ];
@@ -104,7 +104,7 @@ export const fptStudents = [
 // Tuần hiện tại: 15/06 - 21/06/2026
 export const scheduleData = [
   // Student 1: Phan Cong Binh (id: 1) - week 11/05 to 17/05
-  { id: 1, studentId: 1, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 106', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
+  { id: 1, studentId: 1, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 106', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT', isOnline: true },
   { id: 2, studentId: 1, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 1', slotColor: '#8B5CF6', startTime: '07:00', endTime: '09:15', subjectCode: 'SWD392', subjectName: 'Architecture and Software Design', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'ABSENT' },
   { id: 3, studentId: 1, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 1', slotColor: '#F97316', startTime: '07:00', endTime: '09:15', subjectCode: 'SDN302', subjectName: 'Solution with .NET', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 4, studentId: 1, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 2', slotColor: '#3B82F6', startTime: '09:30', endTime: '11:45', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
@@ -128,14 +128,14 @@ export const scheduleData = [
   { id: 18, studentId: 3, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 4', slotColor: '#3B82F6', startTime: '15:00', endTime: '17:15', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Alpha 405', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 19, studentId: 3, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 3', slotColor: '#10B981', startTime: '12:30', endTime: '14:45', subjectCode: 'EXE101', subjectName: 'Experiential Entrepreneurship', room: 'Alpha 206', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 20, studentId: 3, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 4', slotColor: '#8B5CF6', startTime: '15:00', endTime: '17:15', subjectCode: 'SWD392', subjectName: 'Architecture and Software Design', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
-  { id: 21, studentId: 3, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 110', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
+  { id: 21, studentId: 3, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 110', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT', isOnline: true },
   { id: 22, studentId: 3, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 3', slotColor: '#3B82F6', startTime: '12:30', endTime: '14:45', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 23, studentId: 3, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 4', slotColor: '#F97316', startTime: '15:00', endTime: '17:15', subjectCode: 'SDN302', subjectName: 'Solution with .NET', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 24, studentId: 3, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 5', slotColor: '#10B981', startTime: '17:30', endTime: '19:45', subjectCode: 'EXE101', subjectName: 'Experiential Entrepreneurship', room: 'Gamma 112', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 25, studentId: 3, date: '2026-05-14', dayLabel: '14/05', dayName: 'Thu', slot: 'Slot 3', slotColor: '#8B5CF6', startTime: '12:30', endTime: '14:45', subjectCode: 'SWD392', subjectName: 'Architecture and Software Design', room: 'Gamma 203', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
 
   // Student 4: Phan Cong Tam (id: 4) - week 11/05 to 17/05 (copies Binh's schedule)
-  { id: 26, studentId: 4, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 106', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
+  { id: 26, studentId: 4, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 106', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT', isOnline: true },
   { id: 27, studentId: 4, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 1', slotColor: '#8B5CF6', startTime: '07:00', endTime: '09:15', subjectCode: 'SWD392', subjectName: 'Architecture and Software Design', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'ABSENT' },
   { id: 28, studentId: 4, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 1', slotColor: '#F97316', startTime: '07:00', endTime: '09:15', subjectCode: 'SDN302', subjectName: 'Solution with .NET', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 29, studentId: 4, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 2', slotColor: '#3B82F6', startTime: '09:30', endTime: '11:45', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Gamma 407', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
@@ -159,7 +159,7 @@ export const scheduleData = [
   { id: 43, studentId: 6, date: '2026-05-11', dayLabel: '11/05', dayName: 'Mon', slot: 'Slot 4', slotColor: '#3B82F6', startTime: '15:00', endTime: '17:15', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Alpha 405', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 44, studentId: 6, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 3', slotColor: '#10B981', startTime: '12:30', endTime: '14:45', subjectCode: 'EXE101', subjectName: 'Experiential Entrepreneurship', room: 'Alpha 206', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 45, studentId: 6, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 4', slotColor: '#8B5CF6', startTime: '15:00', endTime: '17:15', subjectCode: 'SWD392', subjectName: 'Architecture and Software Design', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
-  { id: 46, studentId: 6, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 110', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
+  { id: 46, studentId: 6, date: '2026-05-12', dayLabel: '12/05', dayName: 'Tue', slot: 'Slot 7', slotColor: '#EF4444', startTime: '17:45', endTime: '19:15', subjectCode: 'PMG201c', subjectName: 'Project Management', room: 'Gamma 110', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT', isOnline: true },
   { id: 47, studentId: 6, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 3', slotColor: '#3B82F6', startTime: '12:30', endTime: '14:45', subjectCode: 'MMA301', subjectName: 'Multimedia Application', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 48, studentId: 6, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 4', slotColor: '#F97316', startTime: '15:00', endTime: '17:15', subjectCode: 'SDN302', subjectName: 'Solution with .NET', room: 'Gamma 215', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },
   { id: 49, studentId: 6, date: '2026-05-13', dayLabel: '13/05', dayName: 'Wed', slot: 'Slot 5', slotColor: '#10B981', startTime: '17:30', endTime: '19:45', subjectCode: 'EXE101', subjectName: 'Experiential Entrepreneurship', room: 'Gamma 112', sessionNo: 1, className: 'SE19B07', lecturer: 'Instructor', attendance: 'PRESENT' },

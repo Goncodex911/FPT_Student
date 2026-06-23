@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, SafeAreaView, StatusBar,
+  ScrollView, SafeAreaView, StatusBar, Animated,
 } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { scheduleData, semesters } from '../data/fptData';
@@ -149,12 +149,12 @@ const AttendanceBadge = ({ status }) => {
   );
 };
 const badge = StyleSheet.create({
-  box: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, marginRight: 6 },
-  txt: { fontSize: 11, fontWeight: '700' },
+  box: { paddingHorizontal: 8, paddingVertical: 5, borderRadius: 20, marginRight: 6, },
+  txt: { fontSize: 10, fontWeight: '700' },
 });
 
 const MaterialBadge = () => (
-  <View style={[badge.box, { backgroundColor: '#EC8E01' }]}>
+  <View style={[badge.box, { backgroundColor: '#EC8E01', paddingHorizontal: 15 }]}>
     <Text style={[badge.txt, { color: '#FFFFFF' }]}>Materials</Text>
   </View>
 );
@@ -165,12 +165,50 @@ const MeetBadge = () => (
   </View>
 );
 
-/* Group schedule items by day */
-const groupByDay = (items) => {
+/* Blinking "Online" text: gray -> green -> gray */
+const OnlineText = ({ size = 13 }) => {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const blink = Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration: 1500, useNativeDriver: false }),
+        Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: false }),
+        Animated.delay(900),
+      ])
+    );
+    blink.start();
+    return () => blink.stop();
+  }, []);
+
+  const color = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#9CA3AF', '#10B981'], // gray -> green
+  });
+
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+      <Animated.View style={[
+        { width: 7, height: 7, borderRadius: 4 },
+        { backgroundColor: color },
+      ]} />
+      <Animated.Text style={{ fontSize: size, fontWeight: '600', color }}>
+        Online
+      </Animated.Text>
+    </View>
+  );
+};
+
+/* Group schedule items by day — always include all 7 days of the week */
+const groupByDay = (items, allWeekDays) => {
   const map = {};
+  // Pre-populate all 7 days so empty days still appear
+  allWeekDays.forEach(d => {
+    map[d.dayLabel] = { dayLabel: d.dayLabel, dayName: d.short, slots: [] };
+  });
+  // Fill in actual slots
   items.forEach(item => {
-    if (!map[item.dayLabel]) map[item.dayLabel] = { dayLabel: item.dayLabel, dayName: item.dayName, slots: [] };
-    map[item.dayLabel].slots.push(item);
+    if (map[item.dayLabel]) map[item.dayLabel].slots.push(item);
   });
   return Object.values(map);
 };
@@ -194,7 +232,7 @@ const ScheduleScreen = ({ navigation }) => {
     return studentSchedule;
   }, [studentSchedule]);
 
-  const grouped = useMemo(() => groupByDay(filteredSchedule), [filteredSchedule]);
+  const grouped = useMemo(() => groupByDay(filteredSchedule, weekDays), [filteredSchedule, weekDays]);
 
   const handleSemesterPress = (idx) => {
     setActiveSemIdx(idx);
@@ -324,43 +362,62 @@ const ScheduleScreen = ({ navigation }) => {
 
                 {/* Slot cards */}
                 <View style={s.slots}>
-                  {day.slots.map((slot, sIdx) => {
-                    const isLastSlot = sIdx === day.slots.length - 1;
-                    return (
-                      <View key={slot.id} style={[s.slotCard, !isLastSlot && s.slotDivider]}>
-                        {/* Colored left bar */}
-                        <View style={[s.slotBar, { backgroundColor: slot.slotColor }]} />
+                  {day.slots.length === 0 ? (
+                    <View style={s.noClass} />
+                  ) : (
+                    day.slots.map((slot, sIdx) => {
+                      const isLastSlot = sIdx === day.slots.length - 1;
+                      return (
+                        <View key={slot.id} style={[s.slotCard, !isLastSlot && s.slotDivider]}>
+                          {/* Colored left bar */}
+                          <View style={[s.slotBar, { backgroundColor: slot.slotColor }]} />
 
-                        {/* Slot time column */}
-                        <View style={s.slotTimeCol}>
-                          <View style={[s.slotBadge, { backgroundColor: slot.slotColor + '20' }]}>
-                            <Text style={[s.slotBadgeTxt, { color: slot.slotColor }]}>{slot.slot}</Text>
+                          {/* Slot time column */}
+                          <View style={s.slotTimeCol}>
+                            <View style={[s.slotBadge, { backgroundColor: slot.slotColor + '20' }]}>
+                              <Text style={[s.slotBadgeTxt, { color: slot.slotColor }]}>{slot.slot}</Text>
+                            </View>
+                            <Text style={s.slotTime}>{slot.startTime}</Text>
+                            <View style={s.slotTimeLine} />
+                            <Text style={s.slotTime}>{slot.endTime}</Text>
                           </View>
-                          <Text style={s.slotTime}>{slot.startTime}</Text>
-                          <View style={s.slotTimeLine} />
-                          <Text style={s.slotTime}>{slot.endTime}</Text>
+
+                          {/* Info column */}
+                          <View style={s.slotInfo}>
+                            <View style={s.roomContainer}>
+                              <Text style={s.roomLabel}>Room</Text>
+                              <Text style={s.roomName}>{slot.room}</Text>
+                            </View>
+                            <Text style={s.slotCode}>{slot.subjectCode}</Text>
+                            <Text style={s.slotDetail}>SessionNo: {slot.sessionNo}</Text>
+                            <Text style={s.slotDetail}>Class: {slot.className}</Text>
+                            <Text style={s.slotDetail}>Lecturer: {slot.lecturer}</Text>
+
+                            {slot.isOnline ? (
+                              /* Online layout: row1 = PRESENT + ● Online, row2 = Materials */
+                              <>
+                                <View style={s.badgeRow}>
+                                  <AttendanceBadge status={slot.attendance} />
+                                  <OnlineText size={11} />
+                                </View>
+                                <View style={[s.badgeRow, { marginTop: 6 }]}>
+                                  <MaterialBadge />
+                                </View>
+                              </>
+                            ) : (
+                              /* Normal layout */
+                              <View style={s.badgeRow}>
+                                <AttendanceBadge status={slot.attendance} />
+                                <MaterialBadge />
+                                {slot.attendance === 'NOT YET' && <MeetBadge />}
+                              </View>
+                            )}
+                          </View>
+
                         </View>
-
-                        {/* Info column */}
-                        <View style={s.slotInfo}>
-                          <View style={s.roomContainer}>
-                            <Text style={s.roomLabel}>Room</Text>
-                            <Text style={s.roomName}>{slot.room}</Text>
-                          </View>
-                          <Text style={s.slotCode}>{slot.subjectCode}</Text>
-                          <Text style={s.slotDetail}>SessionNo: {slot.sessionNo}</Text>
-                          <Text style={s.slotDetail}>Class: {slot.className}</Text>
-                          <Text style={s.slotDetail}>Lecturer: {slot.lecturer}</Text>
-
-                          <View style={s.badgeRow}>
-                            <AttendanceBadge status={slot.attendance} />
-                            <MaterialBadge />
-                            {slot.attendance === 'NOT YET' && <MeetBadge />}
-                          </View>
-                        </View>
-                      </View>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </View>
               </View>
             ))}
@@ -496,11 +553,11 @@ const s = StyleSheet.create({
   /* Day group */
   dayGroup: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.8,
     borderBottomColor: COLORS.border,
   },
   dayGroupFirst: {
-    borderTopWidth: 1,
+    borderTopWidth: 0.8,
     borderTopColor: COLORS.border,
     marginTop: -1,
   },
@@ -517,6 +574,18 @@ const s = StyleSheet.create({
   slots: {
     flex: 1,
   },
+  noClass: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  noClassTxt: {
+    color: COLORS.textLight,
+    fontSize: 13,
+    fontStyle: 'italic',
+  },
 
   /* Slot card */
   slotCard: {
@@ -525,7 +594,7 @@ const s = StyleSheet.create({
     overflow: 'hidden',
   },
   slotDivider: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.2,
     borderBottomColor: COLORS.border,
   },
   slotBar: {
@@ -538,7 +607,7 @@ const s = StyleSheet.create({
   /* Slot time col */
   slotTimeCol: { alignItems: 'center', paddingHorizontal: 10, paddingVertical: 12, minWidth: 72 },
   slotBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, marginBottom: 8 },
-  slotBadgeTxt: { fontSize: 11, fontWeight: '700' },
+  slotBadgeTxt: { fontSize: 11, fontWeight: '800' },
   slotTime: { fontSize: 10, color: '#A0AEC0', fontWeight: '500' },
   slotTimeLine: { width: 1, height: 16, backgroundColor: COLORS.border, marginVertical: 3 },
 
@@ -557,7 +626,9 @@ const s = StyleSheet.create({
   roomName: { fontSize: 13, fontWeight: '700', color: COLORS.navy },
   slotCode: { fontSize: 13, fontWeight: '500', color: COLORS.textSub },
   slotDetail: { fontSize: 13, color: COLORS.textSub, marginTop: 2 },
-  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 4 },
+  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 4, alignItems: 'center' },
+  onlineDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#10B981', marginLeft: 2 },
+  onlineTxt: { fontSize: 13, fontWeight: '600', color: '#10B981' },
 });
 
 export default ScheduleScreen;
