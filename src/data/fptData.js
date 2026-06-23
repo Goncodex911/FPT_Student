@@ -289,23 +289,23 @@ export const menuSections = [
   {
     section: 'NOTIFICATION AND APPLICATION STATUS',
     items: [
-      { id: 'notification', label: 'Notification', icon: 'notifications', iconBg: '#FEF3C7', iconColor: '#F59E0B', screen: null },
-      { id: 'appstatus', label: 'Application status', icon: 'person-circle', iconBg: '#DBEAFE', iconColor: '#3B82F6', screen: null },
+      { id: 'notification', label: 'Notification', icon: 'notifications', iconBg: '#FEF3C7', iconColor: '#ED8E00', screen: null },
+      { id: 'appstatus', label: 'Application status', icon: 'address-book', iconBg: '#DBEAFE', iconColor: '#1566AE', screen: null, isFontAwesome: true },
     ],
   },
   {
     section: 'INFORMATION ACCESS',
     items: [
-      { id: 'timetable', label: 'Weekly timetable', icon: 'calendar', iconBg: '#DBEAFE', iconColor: '#3B82F6', screen: 'Schedule' },
-      { id: 'exam', label: 'Exam schedule', icon: 'reader', iconBg: '#FCE7F3', iconColor: '#EC4899', screen: 'Exam' },
-      { id: 'semester', label: 'Semester Schedule', icon: 'apps', iconBg: '#EDE9FE', iconColor: '#7C3AED', screen: null, halfRow: true },
+      { id: 'timetable', label: 'Weekly timetable', icon: 'calendar-day', iconBg: '#DBEAFE', iconColor: '#0DA1E3', screen: 'Schedule', isFontAwesome: true },
+      { id: 'exam', label: 'Exam schedule', icon: 'rectangle-list', iconBg: '#FCE7F3', iconColor: '#E94242', screen: 'Exam', isFontAwesome6: true },
+      { id: 'semester', label: 'Semester Schedule', icon: 'calendar-days', iconBg: '#EDE9FE', iconColor: '#875AF0', screen: null, halfRow: true, isFontAwesome6: true },
     ],
   },
   {
     section: 'REPORTS',
     items: [
-      { id: 'attendance', label: 'Attendance report', icon: 'list', iconBg: '#D1FAE5', iconColor: '#10B981', screen: null },
-      { id: 'mark', label: 'Mark Report', icon: 'bar-chart', iconBg: '#FEF3C7', iconColor: '#F59E0B', screen: null },
+      { id: 'attendance', label: 'Attendance report', icon: 'list-check', iconBg: '#D1FAE5', iconColor: '#0FB57E', screen: null, isFontAwesome6: true },
+      { id: 'mark', label: 'Mark Report', icon: 'square-poll-vertical', iconBg: '#FEF3C7', iconColor: '#EF9A0A', screen: null, isFontAwesome6: true },
       { id: 'fee', label: 'Student Fee', icon: 'calculator', iconBg: '#FCE7F3', iconColor: '#EF4444', screen: null },
       { id: 'fptdng', label: 'FPT DNG', icon: 'cash', iconBg: '#FEF3C7', iconColor: '#F59E0B', screen: null },
     ],

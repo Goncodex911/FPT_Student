@@ -4,7 +4,7 @@ import {
   ScrollView, SafeAreaView, StatusBar, Image,
   Animated, Dimensions, Modal,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { menuSections } from '../data/fptData';
 import { COLORS } from '../utils/theme';
@@ -26,7 +26,13 @@ const maskEmail = (email) => {
 const MenuItem = ({ item, onPress }) => (
   <TouchableOpacity style={s.menuItem} onPress={() => onPress(item)} activeOpacity={0.75}>
     <View style={[s.iconBox, { backgroundColor: item.iconBg }]}>
-      <Ionicons name={item.icon} size={30} color={item.iconColor} />
+      {item.isFontAwesome ? (
+        <FontAwesome5 name={item.icon} size={28} color={item.iconColor} solid />
+      ) : item.isFontAwesome6 ? (
+        <FontAwesome6 name={item.icon} size={26} color={item.iconColor} solid />
+      ) : (
+        <Ionicons name={item.icon} size={30} color={item.iconColor} />
+      )}
     </View>
     <Text style={s.menuLabel}>{item.label}</Text>
   </TouchableOpacity>
@@ -87,7 +93,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           {/* <TouchableOpacity style={s.bellBtn}> */}
-            <Ionicons name="notifications" size={22} color="#fff" />
+            <FontAwesome5 name="bell" size={20} color="#fff" solid />
           {/* </TouchableOpacity> */}
         </View>
       </SafeAreaView>
