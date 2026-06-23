@@ -3,7 +3,8 @@ import {
   View, Text, StyleSheet, TouchableOpacity,
   ScrollView, StatusBar, Switch,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { COLORS } from '../utils/theme';
 
@@ -50,35 +51,41 @@ const QRCode = ({ size = 160 }) => {
   );
 };
 
-const InfoRow = ({ icon, iconBg, iconColor, label, value, masked, onToggleMask }) => {
+const InfoRow = ({ icon, iconBg, iconColor, label, value, masked, onToggleMask, isFontAwesome = false }) => {
   const [show, setShow] = useState(!masked);
   const displayVal = masked && !show ? value : value;
 
   return (
     <View style={row.wrap}>
       <View style={[row.iconBox, { backgroundColor: iconBg }]}>
-        <Ionicons name={icon} size={18} color={iconColor} />
+        {isFontAwesome ? (
+          <FontAwesome5 name={icon} size={16} color={iconColor} solid />
+        ) : (
+          <Ionicons name={icon} size={18} color={iconColor} />
+        )}
       </View>
       <View style={row.info}>
         <Text style={row.label}>{label}</Text>
-        <Text style={row.value}>{displayVal}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+          <Text style={[row.value, { marginTop: 0 }]}>{displayVal}</Text>
+          {masked && (
+            <TouchableOpacity onPress={() => setShow(!show)} style={[row.eye, { marginLeft: 8 }]}>
+              <FontAwesome5 name={show ? 'eye' : 'eye-slash'} size={10} color={COLORS.textSub} solid />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-      {masked && (
-        <TouchableOpacity onPress={() => setShow(!show)} style={row.eye}>
-          <Ionicons name={show ? 'eye' : 'eye-off-outline'} size={18} color={COLORS.textSub} />
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
 
 const row = StyleSheet.create({
-  wrap: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  iconBox: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  wrap: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
+  iconBox: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
   info: { flex: 1 },
   label: { fontSize: 11, color: COLORS.textLight },
   value: { fontSize: 14, fontWeight: '600', color: COLORS.text, marginTop: 2 },
-  eye: { padding: 4 },
+  eye: { padding: 1 },
 });
 
 const SectionCard = ({ title, children, barColor = COLORS.primary }) => (
@@ -119,26 +126,35 @@ const ProfileScreen = ({ navigation }) => {
             <Ionicons name="person" size={44} color="#CBD5E0" />
           </View>
           <Text style={ps.bannerName}>{s?.fullName}</Text>
-          <View style={ps.roleBadge}>
-            <Text style={ps.roleTxt}>{s?.role}</Text>
-          </View>
+          {s?.role === 'HD' ? (
+            <View style={ps.roleBadgeHD}>
+              <Text style={ps.roleTxtHD}>HD</Text>
+            </View>
+          ) : (
+            <View style={ps.roleBadge}>
+              <Text style={ps.roleTxt}>{s?.role}</Text>
+            </View>
+          )}
         </View>
 
         {/* ── Student Information ── */}
         <SectionCard title="Student Information" barColor="#000">
           <InfoRow
-            icon="card-outline" iconBg="#DBEAFE" iconColor={COLORS.blue}
+            icon="id-card" iconBg={COLORS.background} iconColor={COLORS.navy}
             label="Roll Number" value={s?.studentCode}
             masked
+            isFontAwesome
           />
           <InfoRow
-            icon="mail-outline" iconBg="#FCE7F3" iconColor={COLORS.pink}
+            icon="envelope" iconBg={COLORS.background} iconColor="#EC8F00"
             label="Email" value={s?.email}
             masked
+            isFontAwesome
           />
           <InfoRow
-            icon="location-outline" iconBg="#D1FAE5" iconColor={COLORS.green}
+            icon="map-marker-alt" iconBg="#E3F2EE" iconColor="#20B27B"
             label="Campus" value={s?.campus}
+            isFontAwesome
           />
         </SectionCard>
 
@@ -230,6 +246,21 @@ const ps = StyleSheet.create({
   bannerName: { fontSize: 20, fontWeight: '800', color: '#fff' },
   roleBadge: { backgroundColor: '#2D6A4F', paddingHorizontal: 14, paddingVertical: 4, borderRadius: 20, marginTop: 8 },
   roleTxt: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  roleBadgeHD: {
+    backgroundColor: '#184953',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 999,
+    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roleTxtHD: {
+    fontSize: 10.5, // Chỉnh kích cỡ chữ HD tại đây (Adjust HD font size here)
+    fontWeight: '700',
+    color: '#0DB47E',
+    letterSpacing: 0.5,
+  },
 
   /* QR */
   qrContainer: { alignItems: 'center', paddingVertical: 20, backgroundColor: '#F8F9FA', borderRadius: 12, marginTop: 12, marginBottom: 10 },

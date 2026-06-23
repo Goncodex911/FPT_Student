@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
 import LoginScreen from '../screens/LoginScreen';
@@ -16,17 +16,36 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 /* ── Tab icon with active indicator dot ── */
-const TabIcon = ({ name, focused, color }) => (
-  <View style={ti.wrap}>
-    <Ionicons
-      name={focused ? name : `${name}-outline`}
-      size={24}
-      color={focused ? COLORS.primary : COLORS.textSub}
-    />
+const TabIcon = ({ name, focused, isFontAwesome = false }) => (
+  <View style={[ti.wrap, focused && ti.wrapActive]}>
+    {isFontAwesome ? (
+      <FontAwesome5
+        name={name}
+        size={22}
+        color={focused ? '#ED8E00' : COLORS.textSub}
+        solid
+      />
+    ) : (
+      <Ionicons
+        name={name}
+        size={24}
+        color={focused ? '#ED8E00' : COLORS.textSub}
+      />
+    )}
   </View>
 );
 const ti = StyleSheet.create({
-  wrap: { alignItems: 'center', justifyContent: 'center' },
+  wrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  wrapActive: {
+    backgroundColor: 'rgba(237, 142, 0, 0.15)',
+  },
 });
 
 const HomeStack = createStackNavigator();
@@ -59,7 +78,7 @@ const MainTabs = () => (
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
       },
-      tabBarActiveTintColor: COLORS.primary,
+      tabBarActiveTintColor: '#ED8E00',
       tabBarInactiveTintColor: '#8899BB',
       tabBarShowLabel: false,  // hide labels, icons only (like myFAP)
     }}
@@ -68,21 +87,21 @@ const MainTabs = () => (
       name="Home"
       component={HomeStackNavigator}
       options={{
-        tabBarIcon: ({ focused, color }) => <TabIcon name="home" focused={focused} color={color} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
       }}
     />
     <Tab.Screen
       name="Chat"
       component={HomeScreen}   // placeholder
       options={{
-        tabBarIcon: ({ focused, color }) => <TabIcon name="chatbubble-ellipses" focused={focused} color={color} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="comment" focused={focused} isFontAwesome />,
       }}
     />
     <Tab.Screen
       name="Profile"
       component={ProfileScreen}
       options={{
-        tabBarIcon: ({ focused, color }) => <TabIcon name="person" focused={focused} color={color} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
       }}
     />
   </Tab.Navigator>
